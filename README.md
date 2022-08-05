@@ -57,26 +57,23 @@ participating in this project you agree to abide by its terms.
 
 -   [x] Bajar datos IGN (Pablo).
 -   [x] Bajar datos OSM (Pablo).
--   [x] Armar red de calles (Pablo).
--   [ ] Bajar datos farmacias
--   [ ] Armar base de escuelas por nivel (Pablo).
--   [ ] Clasificar escuelas multilingüe (Agustina).
--   [ ] Identificar Centros de salud privados (Agustina).
--   [ ] Buscar polígonos de barrios cerrados (Pablo).
--   [ ] Completar y dibujar polígonos de barrios cerrados (Agustina).
--   [ ] Dibujar polígono de casco histórico (Agustina).
--   [ ] https://github.com/estedeahora/pilar/issues/1
--   [ ] Bajar datos RENABAP (Pablo).
--   [ ] Bajar datos de paradas de colectivo (Pablo)
--   [ ] Georreferenciar entrada a barrios cerrados (Agustina).
--   [ ] Georreferenciar entrada a Grandes superficies comerciales
-    (Agustina).
--   [ ] Relevar y georreferenciar locales de comida rápida
-    internacionales: Burguer; Kanzas; Mc Donald; Café Martinez /
-    Starbuck (?)
--   [ ] Discriminar zonas no pobladas para quitar esquinas del análisis
-    (Pablo y Agustina).
--   [ ] Buscar otras fuentes disponibles en:
+- [x] Armar red de calles (Pablo).
+- [ ] Bajar datos farmacias
+- [ ] Armar base de escuelas por nivel (Pablo).
+- [ ] Clasificar escuelas multilingüe (Agustina).
+- [ ] Identificar Centros de salud privados (Agustina).
+- [ ] Buscar polígonos de barrios cerrados (Pablo).
+- [ ] Completar y dibujar polígonos de barrios cerrados (Agustina).
+- [ ] Dibujar polígono de casco histórico (Agustina).
+- [ ] https://github.com/estedeahora/pilar/issues/1
+- [ ] #1
+- [ ] Bajar datos RENABAP (Pablo).
+- [ ] Bajar datos de paradas de colectivo (Pablo)
+- [ ] Georreferenciar entrada a barrios cerrados (Agustina).
+- [ ] Georreferenciar entrada a Grandes superficies comerciales (Agustina).
+- [ ] Relevar y georreferenciar locales de comida rápida internacionales: Burguer; Kanzas; Mc Donald; Café Martinez / Starbuck (?)
+- [ ] Discriminar zonas no pobladas para quitar esquinas del análisis (Pablo y Agustina).
+- [ ] Buscar otras fuentes disponibles en:
     1)  *Datos Argentina:* <https://www.datos.gob.ar/>;
     2)  *Datar:* <http://datar.info/> ;
     3)  *Dirección de estadísticas PBA:*
