@@ -76,8 +76,15 @@ participating in this project you agree to abide by its terms.
 -   [ ] Discriminar zonas no pobladas para quitar esquinas del análisis
     (Pablo y Agustina).
 -   [ ] Buscar otras fuentes disponibles en:
-    1)  Datos Argentina: <https://www.datos.gob.ar/>;
-    2)  Datar: <http://datar.info/> ;
-    3)  Dirección de estadísticas PBA:
+    1)  *Datos Argentina:* <https://www.datos.gob.ar/>;
+    2)  *Datar:* <http://datar.info/> ;
+    3)  *Dirección de estadísticas PBA:*
         <http://www.estadistica.ec.gba.gov.ar/dpe/> ;
-    4)  ARBA: <https://carto.arba.gov.ar/cartoArba/>
+    4)  *ARBA:* <https://carto.arba.gov.ar/cartoArba/> WFS:
+        <http://geo.arba.gov.ar/geoserver/idera/wfs>
+    5)  *urBAsig:* <https://urbasig.gob.gba.gob.ar/urbasig/> WMS:
+        <http://urbasig.gob.gba.gob.ar/geoserver/urbasig/wms>? WFS:
+        <http://urbasig.gob.gba.gob.ar/geoserver/urbasig/wfs>?
+    6)  *Ideba:* <https://ideba.gba.gob.ar/> y
+        <https://ideba.gba.gob.ar/visualizadores>
+    7)  *IDEHab:* <http://181.171.117.68/mapa/>
