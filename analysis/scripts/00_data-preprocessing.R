@@ -6,14 +6,7 @@ library(osmdata)
 
 # Functions ---------------------------------------------------------------
 
-# Cargar y Cortar objetos sf
-st_readandcut <- function(path, pol = PILAR_bf){
-  st_read(path) |>
-    st_make_valid() |>
-    st_intersection(pol)
-}
-
-# Recodificar a UTF-8
+# iconv2: Recodificar a UTF-8
 iconv2 <- function(v){
   if(is.character(v)){
     res <- iconv(v , from="UTF-8", to="UTF-8")
@@ -22,6 +15,29 @@ iconv2 <- function(v){
   }
   return(res)
 }
+
+# OSM_query: Generar consulta de datos en OSM
+
+OSM_query <- function(bb, k, v = NULL,
+                      feature = "osm_points", zona = PILAR_bf){
+  res <-  bb |>
+    opq() |>
+    add_osm_feature(key = k, value = v) %>%
+    osmdata_sf() %>%
+    `[[`(feature) %>%
+    mutate(across(.fns = ~iconv2(.x)) ) |>
+    st_intersection(zona)
+
+  return(res)
+}
+
+# st_readandcut: Cargar y Cortar objetos sf
+st_readandcut <- function(path, pol = PILAR_bf){
+  st_read(path) |>
+    st_make_valid() |>
+    st_intersection(pol)
+}
+
 # Bounding box --------------------------------------
 
 bb <- c(xmin = -59.08579,
@@ -61,57 +77,21 @@ rm(client, request,wfs, fileName)
 # OSM ---------------------------------------------------------------------
 
 # CALLEJERO
-# value = c("motorway", "road", "trunk", "primary",
-#           "secondary", "tertiary", "unclassified")
-
-CALLE <-  bb |>
-  opq() |>
-  add_osm_feature(key = 'highway') %>%
-  osmdata_sf() %>%
-  `[[`("osm_lines") %>%
-  mutate(across(.fns = ~iconv2(.x)) ) |>
-  filter(highway != "footway" ) |>
-  st_intersection(PILAR_bf)
+CALLE <- OSM_query(bb = bb, k = 'highway',
+                   feature = "osm_lines")  |>
+  filter(highway != "footway" )
 
 # Bancos y ATM
-BANK <-  bb  |>
-  opq() |>
-  add_osm_feature(key = 'amenity',
-                  value = c("bank")) %>%
-  osmdata_sf() %>%
-  `[[`("osm_points") %>%
-  mutate(across(.fns = ~iconv2(.x)) ) |>
-  st_intersection(PILAR_bf)
-
-ATM <- bb |>
-  opq() |>
-  add_osm_feature(key = 'amenity',
-                  value = c("atm")) %>%
-  osmdata_sf() %>%
-  `[[`("osm_points") %>%
-  mutate(across(.fns = ~iconv2(.x)) ) |>
-  st_intersection(PILAR_bf)
+BANK <- OSM_query(bb = bb, k = 'amenity', v = 'bank')
+ATM  <- OSM_query(bb = bb, k = 'amenity', v = 'atm' )
 
 # Seguridad: Comisaría
-POLICE <- bb %>%
-  opq() |>
-  add_osm_feature(key = 'amenity',
-                  value = "police") %>%
-  osmdata_sf() %>%
-  `[[`("osm_points") %>%
-  mutate(across(.fns = ~iconv2(.x)) ) |>
-  st_intersection(PILAR_bf)
+POLICE <- OSM_query(bb = bb, k = 'amenity', v = 'police')
 
 # Compra de alimentos
-SUPER <-  bb %>%
-  opq() |>
-  add_osm_feature(key = 'shop',
-                  value = c("butcher", "convenience", "wholesale",
-                            "greengrocer", "mall", "supermarket")) %>%
-  osmdata_sf() %>%
-  `[[`("osm_points") %>%
-  mutate(across(.fns = ~iconv2(.x)) )|>
-  st_intersection(PILAR_bf)
+SUPER <- OSM_query(bb = bb, k = 'shop',
+                   v = c("butcher", "convenience", "wholesale",
+                         "greengrocer", "mall", "supermarket"))
 
 # ME: Mapa de Educativo Nacional --------------------------------------
 # http://mapa.educacion.gob.ar/
@@ -120,8 +100,7 @@ SUPER <-  bb %>%
 # https://inbo.github.io/tutorials/tutorials/spatial_wfs_services/
 # https://github.com/rOpenGov/rwfs
 
-# ESC <- st_read("Analysis/data/pilar_esc.geojson")
-# UNI <- st_read("Analysis/data/pilar_uni.geojson")
+# options(timeout = 300)
 
 fileName <- tempfile()
 download.file("http://mapa.educacion.gob.ar/geoserver/ows?service=wfs&version=1.1.0&request=GetCapabilities", fileName)
@@ -133,16 +112,22 @@ ESC <- client$getLayer("establecimiento_educativo") |>
   st_intersection(PILAR_bf)
 
 UNI <- client$getLayer("universidades") |>
-  select(universidad, facultad, SECTOR = sector, geometry = the_geom)|>
+  select(universidad, facultad, SECTOR = sector, geometry = the_geom) |>
   st_intersection(PILAR_bf)
 
 unlink(fileName)
 
 rm(request, client, fileName)
 
+# RENABAP -----------------------------------------------------------------
+
+BP <- st_read("https://datosabiertos.desarrollosocial.gob.ar/dataset/0d022767-9390-486a-bff4-ba53b85d730e/resource/97cc7d10-ad4c-46cb-9ee4-becb402adf9f/download/2022-07-13_info_publica.geojson") |>
+  st_make_valid() |>
+  st_intersection(PILAR_bf)
+
 # IGN ---------------------------------------------------------------------
 
-ruta <- "Analysis/_raw/IGN/"
+ruta <- "Analysis/_rawdata/IGN/"
 archivos <- list.files(path = ruta, pattern = ".json",
                        all.files = T, recursive = T)
 
@@ -152,9 +137,11 @@ names(IGN) <- archivos |>
   (\(x){str_split(x, pattern = "\\+", simplify = T)[,2]})() |>
   str_remove(".json")
 
+rm(ruta, archivos)
+
 # Antenas de celulares (DATAR) ----------------------------------------------------
 
-ruta <- "Analysis/_raw/CEL/"
+ruta <- "Analysis/_rawdata/CEL/"
 archivos <- list.files(path = ruta, pattern = ".geojson",
                        all.files = T, recursive = T)
 
@@ -177,6 +164,9 @@ st_write(REGION, dsn = "Analysis/data/pilar_region.geojson", append = F)
 st_write(PILAR, dsn = "Analysis/data/pilar_depto.geojson", append = F)
 st_write(CALLE, dsn = "Analysis/data/pilar_calle.geojson", append = F)
 
+# Tipos de barrios
+st_write(BP, dsn = "Analysis/data/pilar_renabap.geojson", append = F)
+
 # Educación
 st_write(ESC, dsn = "Analysis/data/pilar_esc.geojson", append = F)
 st_write(UNI, dsn = "Analysis/data/pilar_uni.geojson", append = F)
@@ -195,27 +185,6 @@ st_write(POLICE, dsn = "Analysis/data/pilar_police.geojson", append = F)
 st_write(SUPER, dsn = "Analysis/data/pilar_comercio.geojson", append = F)
 
 
-# Pruebas gráficas --------------------------------------------------------
-
-REGION |>
-  ggplot() +
-  geom_sf() +
-  geom_sf(data = PILAR_bf, color = "red", alpha = 0) +
-  geom_sf(data = PILAR, fill = "green", alpha = 0.1) +
-  # geom_sf_text(aes(label = departamento)) +
-  geom_sf(data = CALLE, color = "grey50", alpha = 0.5) +
-  # geom_sf(data = ESC, aes(color = SECTOR), alpha = 0.5) +
-  # geom_sf(data = UNI, shape = 4 ) +
-  # geom_sf(data = CEL, aes(color = base) ) +
-  # geom_sf(data = ATM, color = "red", shape = 4 ) +
-  scale_color_discrete(type = c("darkblue", "tomato4")) +
-  theme_void()
-
-library(leaflet)
-
-leaflet() |>
-  addTiles() |>
-  addPolylines(data = CALLE)
 
 
 
