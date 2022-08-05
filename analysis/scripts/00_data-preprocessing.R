@@ -125,6 +125,26 @@ BP <- st_read("https://datosabiertos.desarrollosocial.gob.ar/dataset/0d022767-93
   st_make_valid() |>
   st_intersection(PILAR_bf)
 
+# Paradas de colectivos ---------------------------------------------------
+
+# Datos de paradas (puntos) GCBA
+# "https://cdn.buenosaires.gob.ar/datosabiertos/datasets/colectivos/paradas-de-colectivo.geojson"
+
+# Datos de recorridos (lineas) de transporte nacional, provincial y municipal
+# Nacional
+# "https://datos.transporte.gob.ar/dataset/f87b93d4-ade2-44fc-a409-d3736ba9f3ba/resource/84947471-9c1e-4a23-8a2e-03a8c87c056f/download/lineasbusrmbajurisdiccionnacional.geojson"
+# Provincial
+# "https://datos.transporte.gob.ar/dataset/f87b93d4-ade2-44fc-a409-d3736ba9f3ba/resource/f95e25bc-a6b2-4a78-a04b-35fa437be96b/download/lineasbusrmbajurisdiccionprovincial.geojson"
+# Municipal
+# "https://datos.transporte.gob.ar/dataset/f87b93d4-ade2-44fc-a409-d3736ba9f3ba/resource/f0f3791a-addc-4143-bb95-ef0e8bca5bd8/download/lineasbusrmbajurisdiccionmunicipal.geojson"
+
+COLEC <- c("https://datos.transporte.gob.ar/dataset/f87b93d4-ade2-44fc-a409-d3736ba9f3ba/resource/84947471-9c1e-4a23-8a2e-03a8c87c056f/download/lineasbusrmbajurisdiccionnacional.geojson",
+           "https://datos.transporte.gob.ar/dataset/f87b93d4-ade2-44fc-a409-d3736ba9f3ba/resource/f95e25bc-a6b2-4a78-a04b-35fa437be96b/download/lineasbusrmbajurisdiccionprovincial.geojson",
+           "https://datos.transporte.gob.ar/dataset/f87b93d4-ade2-44fc-a409-d3736ba9f3ba/resource/f0f3791a-addc-4143-bb95-ef0e8bca5bd8/download/lineasbusrmbajurisdiccionmunicipal.geojson") |>
+  map(st_read) |>
+  map(st_intersection, PILAR_bf) |>
+  set_names(paste0("colec_", c("nacional", "provincial", "municipal")))
+
 # IGN ---------------------------------------------------------------------
 
 ruta <- "Analysis/_rawdata/IGN/"
@@ -166,6 +186,10 @@ st_write(CALLE, dsn = "Analysis/data/pilar_calle.geojson", append = F)
 
 # Tipos de barrios
 st_write(BP, dsn = "Analysis/data/pilar_renabap.geojson", append = F)
+
+# Transporte
+n <- paste0("Analysis/data/pilar_", names(COLEC), ".geojson")
+walk2(IGN, n, \(x, y) st_write(obj = x, dsn = y) )
 
 # Educación
 st_write(ESC, dsn = "Analysis/data/pilar_esc.geojson", append = F)
