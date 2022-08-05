@@ -8,13 +8,12 @@ library(osmdata)
 
 # Cargar y Cortar objetos sf
 st_readandcut <- function(path, pol = PILAR_bf){
-  st_read(path) |> 
-    st_make_valid() |> 
+  st_read(path) |>
+    st_make_valid() |>
     st_intersection(pol)
 }
 
 # Recodificar a UTF-8
-
 iconv2 <- function(v){
   if(is.character(v)){
     res <- iconv(v , from="UTF-8", to="UTF-8")
@@ -45,78 +44,73 @@ request <- GMLFile$new(fileName)
 client <- WFSCachingClient$new(request)
 
 # Región
-REGION <- client$getLayer(layer = "geocenso2010:departamentos_codigo") |> 
+REGION <- client$getLayer(layer = "geocenso2010:departamentos_codigo") |>
   filter(codpcia == "06") |>
   st_intersection(bb)
 
 # Pilar
-PILAR <- REGION |> 
+PILAR <- REGION |>
   filter(link == "06638")
-PILAR_bf <- PILAR |> 
-  st_buffer(dist = set_units(1.5, km) ) |> 
-  select()
 
-# Callejero
-# CALLE <- st_read("Analysis/data/pilar_calle.geojson")
-# CALLE <- client$getLayer(layer = "sig:vias") |> 
-#   filter(codaglo == "0001") |> 
-#   select(tipo:codloc, geometry = geom) |> 
-#   st_intersection(PILAR_bf)
+PILAR_bf <- PILAR |>
+  st_buffer(dist = set_units(1.5, km) ) |>
+  select()
 
 rm(client, request,wfs, fileName)
 
-
 # OSM ---------------------------------------------------------------------
+
 # CALLEJERO
-CALLE <-  bb %>%
-  opq() |> 
-  add_osm_feature(key = 'highway',
-                  value = c("motorway", "road", "trunk", "primary", 
-                            "secondary", "tertiary", "unclassified")) %>%
+# value = c("motorway", "road", "trunk", "primary",
+#           "secondary", "tertiary", "unclassified")
+
+CALLE <-  bb |>
+  opq() |>
+  add_osm_feature(key = 'highway') %>%
   osmdata_sf() %>%
-  `[[`("osm_points") %>%
-  mutate(across(.fns = ~iconv2(.x)) ) |> 
+  `[[`("osm_lines") %>%
+  mutate(across(.fns = ~iconv2(.x)) ) |>
+  filter(highway != "footway" ) |>
   st_intersection(PILAR_bf)
 
-# Bancos
-BANK <-  bb %>%
-  opq() |> 
+# Bancos y ATM
+BANK <-  bb  |>
+  opq() |>
   add_osm_feature(key = 'amenity',
                   value = c("bank")) %>%
   osmdata_sf() %>%
   `[[`("osm_points") %>%
-  mutate(across(.fns = ~iconv2(.x)) ) |> 
+  mutate(across(.fns = ~iconv2(.x)) ) |>
   st_intersection(PILAR_bf)
 
-ATM <-  bb %>%
-  opq() |> 
+ATM <- bb |>
+  opq() |>
   add_osm_feature(key = 'amenity',
                   value = c("atm")) %>%
   osmdata_sf() %>%
   `[[`("osm_points") %>%
-  mutate(across(.fns = ~iconv2(.x)) ) |> 
+  mutate(across(.fns = ~iconv2(.x)) ) |>
   st_intersection(PILAR_bf)
 
 # Seguridad: Comisaría
 POLICE <- bb %>%
-  opq() |> 
+  opq() |>
   add_osm_feature(key = 'amenity',
                   value = "police") %>%
   osmdata_sf() %>%
   `[[`("osm_points") %>%
-  mutate(across(.fns = ~iconv2(.x)) ) |> 
+  mutate(across(.fns = ~iconv2(.x)) ) |>
   st_intersection(PILAR_bf)
 
 # Compra de alimentos
-
 SUPER <-  bb %>%
-  opq() |> 
+  opq() |>
   add_osm_feature(key = 'shop',
                   value = c("butcher", "convenience", "wholesale",
                             "greengrocer", "mall", "supermarket")) %>%
   osmdata_sf() %>%
   `[[`("osm_points") %>%
-  mutate(across(.fns = ~iconv2(.x)) )|> 
+  mutate(across(.fns = ~iconv2(.x)) )|>
   st_intersection(PILAR_bf)
 
 # ME: Mapa de Educativo Nacional --------------------------------------
@@ -134,12 +128,12 @@ download.file("http://mapa.educacion.gob.ar/geoserver/ows?service=wfs&version=1.
 request <- GMLFile$new(fileName)
 client <- WFSCachingClient$new(request)
 
-ESC <- client$getLayer("establecimiento_educativo") |> 
-  select(CUE = cue, name = fna, SECTOR = ges, mde, nen, geometry = the_geom) |> 
+ESC <- client$getLayer("establecimiento_educativo") |>
+  select(CUE = cue, name = fna, SECTOR = ges, mde, nen, geometry = the_geom) |>
   st_intersection(PILAR_bf)
 
-UNI <- client$getLayer("universidades") |> 
-  select(universidad, facultad, SECTOR = sector, geometry = the_geom)|> 
+UNI <- client$getLayer("universidades") |>
+  select(universidad, facultad, SECTOR = sector, geometry = the_geom)|>
   st_intersection(PILAR_bf)
 
 unlink(fileName)
@@ -154,10 +148,10 @@ archivos <- list.files(path = ruta, pattern = ".json",
 
 IGN <- map(paste0(ruta, archivos), st_readandcut)
 
-names(IGN) <- archivos |> 
-  (\(x){str_split(x, pattern = "\\+", simplify = T)[,2]})() |> 
+names(IGN) <- archivos |>
+  (\(x){str_split(x, pattern = "\\+", simplify = T)[,2]})() |>
   str_remove(".json")
-  
+
 # Antenas de celulares (DATAR) ----------------------------------------------------
 
 ruta <- "Analysis/_raw/CEL/"
@@ -165,13 +159,13 @@ archivos <- list.files(path = ruta, pattern = ".geojson",
                        all.files = T, recursive = T)
 
 CEL <- map(paste0(ruta, archivos), st_readandcut)
-names(CEL) <- archivos |> 
+names(CEL) <- archivos |>
   str_remove(".geojson")
 
-CEL <- do.call(rbind, CEL) |> 
-  as_tibble(rownames = "base") |> 
-  mutate(base = str_split(base, "\\.", simplify = T)[ , 1 ]) |> 
-  st_as_sf(crs = 4326) |> 
+CEL <- do.call(rbind, CEL) |>
+  as_tibble(rownames = "base") |>
+  mutate(base = str_split(base, "\\.", simplify = T)[ , 1 ]) |>
+  st_as_sf(crs = 4326) |>
   select(base)
 
 rm(ruta, archivos)
@@ -203,12 +197,12 @@ st_write(SUPER, dsn = "Analysis/data/pilar_comercio.geojson", append = F)
 
 # Pruebas gráficas --------------------------------------------------------
 
-REGION |> 
-  ggplot() + 
-  geom_sf() + 
-  geom_sf(data = PILAR_bf, color = "red", alpha = 0) + 
+REGION |>
+  ggplot() +
+  geom_sf() +
+  geom_sf(data = PILAR_bf, color = "red", alpha = 0) +
   geom_sf(data = PILAR, fill = "green", alpha = 0.1) +
-  # geom_sf_text(aes(label = departamento)) + 
+  # geom_sf_text(aes(label = departamento)) +
   geom_sf(data = CALLE, color = "grey50", alpha = 0.5) +
   # geom_sf(data = ESC, aes(color = SECTOR), alpha = 0.5) +
   # geom_sf(data = UNI, shape = 4 ) +
@@ -219,8 +213,8 @@ REGION |>
 
 library(leaflet)
 
-leaflet() |> 
-  addTiles() |> 
+leaflet() |>
+  addTiles() |>
   addPolylines(data = CALLE)
 
 
