@@ -37,3 +37,17 @@ vignettes/*.pdf
 
 # R Environment Variables
 .Renviron
+.Rproj.user
+
+# Readme.Rmd
+README.Rmd
+
+# Template, Draft and Raw folders
+analysis/_draft
+analysis/_templates
+
+# Paper
+analysis/Recursos-Urbanos-Pilar.Rmd
+analysis/Recursos-Urbanos-Pilar.docx
+analysis/~$*.docx
+analysis/Recursos-Urbanos-Pilar.pdf
