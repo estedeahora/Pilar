@@ -58,6 +58,10 @@ participating in this project you agree to abide by its terms.
 -   [x] Bajar datos IGN (Pablo).
 -   [x] Bajar datos OSM (Pablo).
 -   [x] Armar red de calles (Pablo).
+-   [x] Bajar datos RENABAP (Pablo).
+    <https://github.com/estedeahora/pilar/issues/1>
+-   [x] Bajar datos de paradas de colectivo (Pablo).
+    <https://github.com/estedeahora/pilar/issues/3>
 -   [ ] Bajar datos farmacias. Buscar fuente (Pablo).
     <https://github.com/estedeahora/pilar/issues/4>
 -   [ ] Armar base de escuelas por nivel (Pablo).
@@ -70,10 +74,6 @@ participating in this project you agree to abide by its terms.
     <https://github.com/estedeahora/pilar/issues/6>
 -   [ ] Completar y dibujar polígonos de barrios cerrados (Agustina).
 -   [ ] Dibujar polígono de casco histórico (Agustina).
--   [ ] Bajar datos RENABAP (Pablo).
-    <https://github.com/estedeahora/pilar/issues/1>
--   [x] Bajar datos de paradas de colectivo (Pablo).
-    <https://github.com/estedeahora/pilar/issues/3>
 -   [ ] Georreferenciar entrada a barrios cerrados (Agustina).
 -   [ ] Georreferenciar entrada a Grandes superficies comerciales
     (Agustina).
