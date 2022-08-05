@@ -59,17 +59,21 @@ participating in this project you agree to abide by its terms.
 -   [x] Bajar datos OSM (Pablo).
 -   [x] Armar red de calles (Pablo).
 -   [ ] Bajar datos farmacias. Buscar fuente (Pablo).
+    <https://github.com/estedeahora/pilar/issues/4>
 -   [ ] Armar base de escuelas por nivel (Pablo).
+    <https://github.com/estedeahora/pilar/issues/5>
 -   [ ] Clasificar escuelas multilingüe (Agustina).
 -   [ ] Identificar y georreferenciar Centros de salud privados
     (Agustina).
 -   [ ] Clasificar ATM Banelco / Link (Agustina).
 -   [ ] Buscar polígonos de barrios cerrados (Pablo).
+    <https://github.com/estedeahora/pilar/issues/6>
 -   [ ] Completar y dibujar polígonos de barrios cerrados (Agustina).
 -   [ ] Dibujar polígono de casco histórico (Agustina).
 -   [ ] Bajar datos RENABAP (Pablo).
     <https://github.com/estedeahora/pilar/issues/1>
--   [ ] Bajar datos de paradas de colectivo (Pablo)
+-   [ ] Bajar datos de paradas de colectivo (Pablo).
+    <https://github.com/estedeahora/pilar/issues/3>
 -   [ ] Georreferenciar entrada a barrios cerrados (Agustina).
 -   [ ] Georreferenciar entrada a Grandes superficies comerciales
     (Agustina).
@@ -77,9 +81,7 @@ participating in this project you agree to abide by its terms.
     internacionales: Burguer; Kanzas; Mc Donald; Café Martinez /
     Starbuck (?)
 -   [ ] Discriminar zonas no pobladas para quitar esquinas del análisis
-    (Pablo y Agustina).
+    (Pablo y Agustina). <https://github.com/estedeahora/pilar/issues/7>
 -   [ ] Armar dimensiones del análisis (Pablo y Agustina).
 -   [ ] Buscar posibles nuevos recursos urbanos para sumar al análisis
-    (Pablo y Agustina)
--   [ ] Buscar otras fuentes disponibles.
-    <https://github.com/estedeahora/pilar/issues/2>
+    (Pablo y Agustina). <https://github.com/estedeahora/pilar/issues/2>
