@@ -65,7 +65,8 @@ participating in this project you agree to abide by its terms.
 -   [ ] Buscar polígonos de barrios cerrados (Pablo).
 -   [ ] Completar y dibujar polígonos de barrios cerrados (Agustina).
 -   [ ] Dibujar polígono de casco histórico (Agustina).
--   [ ] Bajar datos RENABAP.
+-   [ ] <https://github.com/estedeahora/pilar/issues/1>
+-   [ ] Bajar datos RENABAP (Pablo).
 -   [ ] Bajar datos de paradas de colectivo (Pablo)
 -   [ ] Georreferenciar entrada a barrios cerrados (Agustina).
 -   [ ] Georreferenciar entrada a Grandes superficies comerciales
