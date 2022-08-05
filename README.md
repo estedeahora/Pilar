@@ -70,7 +70,7 @@ participating in this project you agree to abide by its terms.
     <https://github.com/estedeahora/pilar/issues/6>
 -   [ ] Completar y dibujar polígonos de barrios cerrados (Agustina).
 -   [ ] Dibujar polígono de casco histórico (Agustina).
--   [ ] Bajar datos RENABAP (Pablo).
+-   [x] Bajar datos RENABAP (Pablo).
     <https://github.com/estedeahora/pilar/issues/1>
 -   [ ] Bajar datos de paradas de colectivo (Pablo).
     <https://github.com/estedeahora/pilar/issues/3>
