@@ -104,39 +104,43 @@ bb <- st_as_sfc(bb) |> st_set_crs(value = 4326)
 
   # ╚ urBAsig -------------------------------------------------------------
 
-  wfs <- "http://urbasig.gob.gba.gob.ar/geoserver/urbasig/wfs"
-
-  fileName <- tempfile()
-
-  download.file(wfs, fileName)
-  request <- GMLFile$new(fileName)
-  client <- WFSCachingClient$new(request)
-
-  # Zonificación
-  ZONIF <- client$getLayer(layer = "urbasig:zonificacion") |>
-    st_intersection(PILAR_bf)
+  # wfs <- "http://urbasig.gob.gba.gob.ar/geoserver/urbasig/wfs"
+  #
+  # fileName <- tempfile()
+  #
+  # download.file(wfs, fileName)
+  # request <- GMLFile$new(fileName)
+  # client <- WFSCachingClient$new(request)
+  #
+  # # Zonificación
+  # ZONIF <- client$getLayer(layer = "urbasig:zonificacion") |>
+  #   st_intersection(PILAR_bf)
 
   # BC <- st_read("analysis/_draft/urBAsig/urbasig_rpuc_1.geojson") |>
   #   st_intersection(PILAR_bf)
 
 # OSM ---------------------------------------------------------------------
 
-# CALLEJERO
-CALLE <- OSM_query(bb = bb, k = 'highway',
-                   feature = "osm_lines")  |>
-  filter(highway != "footway" )
+  # CALLEJERO
+  CALLE <- OSM_query(bb = bb, k = 'highway',
+                     feature = "osm_lines")  |>
+    filter(highway != "footway" )
 
-# Bancos y ATM
-BANK <- OSM_query(bb = bb, k = 'amenity', v = 'bank')
-ATM  <- OSM_query(bb = bb, k = 'amenity', v = 'atm' )
+  CALLE <- do.call(rbind,
+                   lapply(X = 1:nrow(CALLE),
+                          FUN = function(i){st_cast(CALLE[i, ],
+                                                    "LINESTRING")}))
 
-# Seguridad: Comisaría
-POLICE <- OSM_query(bb = bb, k = 'amenity', v = 'police')
+  # Bancos y ATM
+  BANK <- OSM_query(bb = bb, k = 'amenity', v = c('bank', 'atm' ) )
 
-# Compra de alimentos
-SUPER <- OSM_query(bb = bb, k = 'shop',
-                   v = c("butcher", "convenience", "wholesale",
-                         "greengrocer", "mall", "supermarket"))
+  # Seguridad: Comisaría
+  POLICE <- OSM_query(bb = bb, k = 'amenity', v = 'police')
+
+  # Compra de alimentos
+  SUPER <- OSM_query(bb = bb, k = 'shop',
+                     v = c("butcher", "convenience", "wholesale",
+                           "greengrocer", "mall", "supermarket"))
 
 # Descarga directa --------------------------------------------------------
 
@@ -227,7 +231,5 @@ st_write(CEL, dsn = "Analysis/data/pilar_cel.geojson", append = F)
 
 # OSM
 st_write(BANK, dsn = "Analysis/data/pilar_bank.geojson", append = F)
-st_write(ATM, dsn = "Analysis/data/pilar_atm.geojson", append = F)
 st_write(POLICE, dsn = "Analysis/data/pilar_police.geojson", append = F)
 st_write(SUPER, dsn = "Analysis/data/pilar_comercio.geojson", append = F)
-
