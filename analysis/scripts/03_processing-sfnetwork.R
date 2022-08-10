@@ -25,28 +25,34 @@ net <- CARTO$CALLE |>
 
 # Retener primer componente de la red
   net <- net |>
-    filter(group_components() == 1) |>
-    mutate(id_n = .tidygraph_node_index)
+    filter(group_components() == 1)
+
+  # save(net, file = "analysis/data/net.RData")
+  # load(file = "analysis/data/net.RData")
 
 # Distancia de red a objetos puntuales ------------------------------------
 
   # Armar paradas de colectivo --------------------------------------------
-  #
-  # n <- net |>
-  #   activate("nodes") |>
-  #   st_as_sf() |>
-  #   st_transform(crs = 5348)
-  #
-  # sel <- names(CARTO)
-  # sel <- sel [str_detect(sel, "COLEC")]
-  #
-  # a <- CARTO[[sel[2]]] |>
-  #   summarise() |>
-  #   st_buffer(dist = set_units(0.002, km) ) |>
-  #   st_transform(crs = 5348)
-  #
-  # # b <- st_snap(n ,a, tolerance = 20)
-  # b <- st_intersection(n ,a)
+
+  n <- net |>
+    activate("nodes") |>
+    st_as_sf()
+
+  sel <- names(CARTO)
+  sel <- sel [str_detect(sel, "COLEC")]
+
+  COLEC <- list()
+
+  for(i in sel){
+    a <- CARTO[[i]] |>
+      summarise() |>
+      st_buffer(dist = set_units(0.02, km) )
+
+    COLEC[[i]] <- st_intersection(n, a)
+  }
+
+
+  rm(sel, a, i, n)
 
   # Armar ppp -------------------------------------------------------------
 
