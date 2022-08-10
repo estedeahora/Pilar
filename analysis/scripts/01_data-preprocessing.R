@@ -214,7 +214,7 @@ st_write(BP, dsn = "Analysis/data/pilar_renabap.geojson", append = F)
 
 # Transporte
 n <- paste0("Analysis/data/pilar_", names(COLEC), ".geojson")
-walk2(IGN, n, \(x, y) st_write(obj = x, dsn = y) )
+walk2(COLEC, n, \(x, y) st_write(obj = x, dsn = y) )
 rm(n)
 
 # Educación
