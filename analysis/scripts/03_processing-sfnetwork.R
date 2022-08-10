@@ -7,26 +7,50 @@ net <- CARTO$CALLE |>
                length_as_weight = T)
 
 # Limpieza de la red
-net <- net |>
-  activate("edges") |>
-  # Subdivisión: Divide los ejes en función de los nodos interiores
-  convert(to_spatial_subdivision) |>
-  # Quita nodos intermedios sin utilidad
-  convert(to_spatial_smooth) |>
-  # Calcular peso de los ejes en función de su tamaño
-  activate("edges") |>
-  mutate(weight = edge_length()) |>
-  # Quita los loops y nodos que duplican path (mejorar rendimiento)
-  arrange(weight) |>
-  convert(to_spatial_simple) |>
-  # Filtrar nodos aislados
-  activate("nodes") |>
-  filter(!node_is_isolated())
+  net <- net |>
+    activate("edges") |>
+    # Subdivisión: Divide los ejes en función de los nodos interiores
+    convert(to_spatial_subdivision) |>
+    # Quita nodos intermedios sin utilidad
+    convert(to_spatial_smooth) |>
+    # Calcular peso de los ejes en función de su tamaño
+    activate("edges") |>
+    mutate(weight = edge_length()) |>
+    # Quita los loops y nodos que duplican path (mejorar rendimiento)
+    arrange(weight) |>
+    convert(to_spatial_simple) |>
+    # Filtrar nodos aislados
+    activate("nodes") |>
+    filter(!node_is_isolated())
+
+# Retener primer componente de la red
+  net <- net |>
+    filter(group_components() == 1) |>
+    mutate(id_n = .tidygraph_node_index)
 
 # Distancia de red a objetos puntuales ------------------------------------
 
-  # Armar ppp ---------------------------------------------------------------
+  # Armar paradas de colectivo --------------------------------------------
+  #
+  # n <- net |>
+  #   activate("nodes") |>
+  #   st_as_sf() |>
+  #   st_transform(crs = 5348)
+  #
+  # sel <- names(CARTO)
+  # sel <- sel [str_detect(sel, "COLEC")]
+  #
+  # a <- CARTO[[sel[2]]] |>
+  #   summarise() |>
+  #   st_buffer(dist = set_units(0.002, km) ) |>
+  #   st_transform(crs = 5348)
+  #
+  # # b <- st_snap(n ,a, tolerance = 20)
+  # b <- st_intersection(n ,a)
 
+  # Armar ppp -------------------------------------------------------------
+
+    # Armar df con todos los puntos
     ppp <- CARTO[map_lgl(CARTO,
                        \(gdf){
                          clase <- gdf |>
@@ -34,18 +58,20 @@ net <- net |>
                            class()
                          if(any(str_detect(clase, "POINT"))  ) TRUE else FALSE
                        })] |>
-      bind_rows(.id = "db")
+      bind_rows(.id = "db") |>
+      select(db)
 
     ppp <- ppp |>
       filter(!st_is_empty(ppp)) |>
-      left_join(AUX$db_label, by = "db") |>
+      # left_join(AUX$db_label, by = "db") |>
       mutate(id = 1:n(),
-             CLASE = factor(CLASE,
-                            levels = unique(AUX$db_label$CLASE) ) )
+             # CLASE = factor(CLASE,
+             #                levels = unique(AUX$db_label$CLASE) )
+             )
 
   # Asignar nodo a ppp ------------------------------------------------
 
-    if(AUX$d){
+    # if(AUX$d){
       # blend red con ppp
       cat("Blend ppp")
       ini <- Sys.time()
@@ -63,16 +89,18 @@ net <- net |>
         round()
 
       # Quitar nodos fuera de CABA (más de 500m)
-      ppp <- ppp |> filter(near_dist < units::as_units(500, "m") )
+      # ppp <- ppp |> filter(near_dist < units::as_units(500, "m") )
 
-      save(net_aux, ppp, file = here::here("analysis/data/net.RData") )
+      # save(net_aux, ppp, file = here::here("analysis/data/net.RData") )
 
-    }else{
-      load(here::here("analysis/data/net.RData") )
-    }
+    # }else{
+      # load(here::here("analysis/data/net.RData") )
+    # }
 
   # Calcular matriz de distancias ------------------------------------------------
 
+    net <- net |> activate("nodes") |> mutate(id_node = 1:n())
+    # net |> activate("nodes") |> st_as_sf() |> st_drop_geometry() |> select(id_node) |> simplify() |> unname()
     from <- 1:nrow(st_as_sf(activate(net, "nodes")))
     to <- ppp$near_node |> unique()
 
@@ -109,7 +137,7 @@ net <- net |>
 
   esquina <- net |>
     st_as_sf() |>
-    select(from = ".tidygraph_node_index") |>
+    # select(from = ".tidygraph_node_index") |>
     left_join(res, by = "from")
 
   rm(res, net_aux, dis)
