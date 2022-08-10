@@ -12,10 +12,10 @@ This repository contains the data and code for our paper:
 
 <!-- Name of journal/book <https://doi.org/xxx/xxx> -->
 <!-- Our pre-print is online here: -->
-<!-- > Authors, (YYYY). _Recursos urbanos y tipología de hábitat en el Partido de Pilar_. Name of journal/book, Accessed 05 ago. 2022. Online at <https://doi.org/xxx/xxx> -->
+<!-- > Authors, (YYYY). _Recursos urbanos y tipología de hábitat en el Partido de Pilar_. Name of journal/book, Accessed 10 ago. 2022. Online at <https://doi.org/xxx/xxx> -->
 <!-- ### How to cite -->
 <!-- Please cite this compendium as: -->
-<!-- > Authors, (2022). _Compendium of R code and data for Recursos urbanos y tipología de hábitat en el Partido de Pilar_. Accessed 05 ago. 2022. Online at <https://doi.org/xxx/xxx> -->
+<!-- > Authors, (2022). _Compendium of R code and data for Recursos urbanos y tipología de hábitat en el Partido de Pilar_. Accessed 10 ago. 2022. Online at <https://doi.org/xxx/xxx> -->
 <!-- ## Contents -->
 <!-- The **analysis** directory contains: -->
 <!--   - [:file\_folder: paper](/analysis/paper): R Markdown source document -->
@@ -62,16 +62,16 @@ participating in this project you agree to abide by its terms.
     <https://github.com/estedeahora/pilar/issues/1>
 -   [x] Bajar datos de paradas de colectivo (Pablo).
     <https://github.com/estedeahora/pilar/issues/3>
+-   [x] Armar base de escuelas por nivel (Pablo).
+    <https://github.com/estedeahora/pilar/issues/5>
+-   [ ] Buscar polígonos de barrios cerrados (Pablo).
+    <https://github.com/estedeahora/pilar/issues/6>
 -   [ ] Bajar datos farmacias. Buscar fuente (Pablo).
     <https://github.com/estedeahora/pilar/issues/4>
--   [ ] Armar base de escuelas por nivel (Pablo).
-    <https://github.com/estedeahora/pilar/issues/5>
 -   [ ] Clasificar escuelas multilingüe (Agustina).
 -   [ ] Identificar y georreferenciar Centros de salud privados
     (Agustina).
 -   [ ] Clasificar ATM Banelco / Link (Agustina).
--   [ ] Buscar polígonos de barrios cerrados (Pablo).
-    <https://github.com/estedeahora/pilar/issues/6>
 -   [ ] Completar y dibujar polígonos de barrios cerrados (Agustina).
 -   [ ] Dibujar polígono de casco histórico (Agustina).
 -   [ ] Georreferenciar entrada a barrios cerrados (Agustina).
