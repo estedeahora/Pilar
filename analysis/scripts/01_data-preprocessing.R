@@ -1,3 +1,5 @@
+# 01 Descarga y pre procesamiento de bases de datos
+
 library(tidyverse)
 library(sf)
 library(rwfs)
@@ -79,9 +81,6 @@ bb <- st_as_sfc(bb) |> st_set_crs(value = 4326)
   # ╠ ME: Mapa de Educativo Nacional --------------------------------------
   # http://mapa.educacion.gob.ar/
   # http://mapa.educacion.gob.ar/geoservicios
-  #
-  # https://inbo.github.io/tutorials/tutorials/spatial_wfs_services/
-  # https://github.com/rOpenGov/rwfs
 
   # options(timeout = 300)
 
@@ -104,6 +103,7 @@ bb <- st_as_sfc(bb) |> st_set_crs(value = 4326)
 
   # ╚ urBAsig -------------------------------------------------------------
 
+  # TODO: DESARROLLAR
   # wfs <- "http://urbasig.gob.gba.gob.ar/geoserver/urbasig/wfs"
   #
   # fileName <- tempfile()
@@ -122,9 +122,10 @@ bb <- st_as_sfc(bb) |> st_set_crs(value = 4326)
 # OSM ---------------------------------------------------------------------
 
   # CALLEJERO
+
   CALLE <- OSM_query(bb = bb, k = 'highway',
                      feature = "osm_lines")  |>
-    filter(highway != "footway" )
+    filter(highway != "footway")
 
   CALLE <- do.call(rbind,
                    lapply(X = 1:nrow(CALLE),
@@ -138,9 +139,7 @@ bb <- st_as_sfc(bb) |> st_set_crs(value = 4326)
   POLICE <- OSM_query(bb = bb, k = 'amenity', v = 'police')
 
   # Compra de alimentos
-  SUPER <- OSM_query(bb = bb, k = 'shop',
-                     v = c("butcher", "convenience", "wholesale",
-                           "greengrocer", "mall", "supermarket"))
+  SUPER <- OSM_query(bb = bb, k = 'shop', v = "supermarket")
 
 # Descarga directa --------------------------------------------------------
 
@@ -161,6 +160,16 @@ bb <- st_as_sfc(bb) |> st_set_crs(value = 4326)
     map(st_read) |>
     map(st_intersection, PILAR_bf) |>
     set_names(paste0("colec_", c("nacional", "provincial", "municipal")))
+
+  # ╠ Ferrocarriles -----------------------------------------------------------
+
+  TREN <- read.csv2("https://datos.transporte.gob.ar/dataset/8a83da77-e431-4d6f-a14a-c98ebc0b900b/resource/624f34de-faa7-4657-8f0a-0aed482f2341/download/estaciones_estaciones.csv") |>
+      filter(longitud != "" ) |>
+      st_as_sf(coords = c("longitud", "latitud"), crs = 4326) |>
+      st_intersection(PILAR_bf)
+
+  TREN_LINEA <- st_read("https://datos.transporte.gob.ar/dataset/f87b93d4-ade2-44fc-a409-d3736ba9f3ba/resource/367a26af-c5b4-4361-b614-abd6ad743383/download/ambalineas.geojson")|>
+    st_intersection(REGION)
 
   # ╠ RENABAP -----------------------------------------------------------------
 
@@ -184,21 +193,29 @@ bb <- st_as_sfc(bb) |> st_set_crs(value = 4326)
 
   rm(ruta, archivos)
 
+  IGN$fabrica <- IGN$fabrica_polyg |>
+    st_centroid() |>
+    bind_rows(IGN$fabrica)
+
+  IGN$fabrica_polyg <- NULL
+
   # ╚ Antenas de celulares ----------------------------------------------------
   # dat.ar
   ruta <- "Analysis/_rawdata/CEL/"
   archivos <- list.files(path = ruta, pattern = ".geojson",
                          all.files = T, recursive = T)
 
-  CEL <- map(paste0(ruta, archivos), st_readandcut)
-  names(CEL) <- archivos |>
-    str_remove(".geojson")
-
-  CEL <- do.call(rbind, CEL) |>
-    as_tibble(rownames = "base") |>
-    mutate(base = str_split(base, "\\.", simplify = T)[ , 1 ]) |>
-    st_as_sf(crs = 4326) |>
-    select(base)
+  CEL <- map(paste0(ruta, archivos),
+             st_readandcut) |>
+    bind_rows()
+  # names(CEL) <- archivos |>
+  #   str_remove(".geojson")
+  #
+  # CEL <- do.call(rbind, CEL) |>
+  #   as_tibble(rownames = "base") |>
+  #   mutate(base = str_split(base, "\\.", simplify = T)[ , 1 ]) |>
+  #   st_as_sf(crs = 4326) |>
+  #   select(base)
 
   rm(ruta, archivos)
 
@@ -206,7 +223,7 @@ bb <- st_as_sfc(bb) |> st_set_crs(value = 4326)
 
 # General
 st_write(REGION, dsn = "Analysis/data/pilar_region.geojson", append = F)
-st_write(PILAR, dsn = "Analysis/data/pilar_depto.geojson", append = F)
+st_write(PILAR, dsn = "Analysis/data/pilar_pilar.geojson", append = F)
 st_write(CALLE, dsn = "Analysis/data/pilar_calle.geojson", append = F)
 
 # Tipos de barrios
@@ -216,6 +233,9 @@ st_write(BP, dsn = "Analysis/data/pilar_renabap.geojson", append = F)
 n <- paste0("Analysis/data/pilar_", names(COLEC), ".geojson")
 walk2(COLEC, n, \(x, y) st_write(obj = x, dsn = y) )
 rm(n)
+
+st_write(TREN, dsn = "Analysis/data/pilar_tren_est.geojson", append = F)
+st_write(TREN_LINEA, dsn = "Analysis/data/pilar_tren_lin.geojson", append = F)
 
 # Educación
 st_write(ESC, dsn = "Analysis/data/pilar_esc.geojson", append = F)
@@ -232,4 +252,4 @@ st_write(CEL, dsn = "Analysis/data/pilar_cel.geojson", append = F)
 # OSM
 st_write(BANK, dsn = "Analysis/data/pilar_bank.geojson", append = F)
 st_write(POLICE, dsn = "Analysis/data/pilar_police.geojson", append = F)
-st_write(SUPER, dsn = "Analysis/data/pilar_comercio.geojson", append = F)
+st_write(SUPER, dsn = "Analysis/data/pilar_super.geojson", append = F)

@@ -1,4 +1,4 @@
-# 01 Data wrangling
+# 02 Data wrangling
 
 # Loading Packages -----------------------------------------------------
 library(tidyverse)
@@ -38,7 +38,6 @@ l <- list(
        Primario = c("Común-Primaria 6años"),
        Secundario = c("Común-Secundaria-Ambos Ciclos", "Común-Secundaria-Ciclo Básico", "Secundaria TécProf(INET)"),
        SNU = c("SNU-Ambos Tipos de Formación", "SNU-Formación Docente", "SNU-Formación Técnico Profesional", "Inst.Sup TécProf(INET)")
-
      )
 # No considerar:
 #   - Especial (ningún nivel);
@@ -51,32 +50,34 @@ for(i in 1:length(l)){
   v <- ESC |>
     filter(str_detect(nen, patron)) |>
     split(~SECTOR) |>
-    set_names(\(x) paste(names(l)[i], x, sep = "_" ))
+    set_names(\(x) paste(names(l)[i], x, sep = "_" ) |> str_to_upper())
   CARTO <- c(CARTO, v)
 }
 
 rm(l, i, v, patron, ESC)
 
 # Transformar polígonos y lineas a puntos  -----------------------------------
-names(CARTO)
 
-CARTO$CALLE$highway |>
-  table()
-
-CARTO$CALLE |> #st_drop_geometry() |> count(highway, sort = T)
-  ggplot() +
-  geom_sf(aes(color = highway))
-
-CARTO$CALLE |> st_drop_geometry() |> count(highway, sort = T)
-
-CARTO$CALLE |>
-  # filter(highway == c( "residential", "service", "tertiary",
-  #                      "motorway", "motorway_link") ) |>
-  ggplot() +
-  geom_sf(aes(color = highway), alpha = 0.5) +
-  # geom_sf(data = CARTO$CALLE |> filter(highway == "living_street"),
-  #         color = "red", size = 1) +
-  geom_sf(data =CARTO$CALLE |> filter(str_detect( name, "Ramal Pilar")), color = "red", size = 2) +
-  # geom_sf(data =CARTO$CALLE |> filter(highway  ==  "motorway"), color = "green") +
-  geom_sf(data =CARTO$CALLE |> filter(str_detect( name, "Ruta")), color = "blue") +
-  theme_void()
+#
+# names(CARTO)
+#
+# CARTO$CALLE$highway |>
+#   table()
+#
+# CARTO$CALLE |> #st_drop_geometry() |> count(highway, sort = T)
+#   ggplot() +
+#   geom_sf(aes(color = highway))
+#
+# CARTO$CALLE |> st_drop_geometry() |> count(highway, sort = T)
+#
+# CARTO$CALLE |>
+#   # filter(highway == c( "residential", "service", "tertiary",
+#   #                      "motorway", "motorway_link") ) |>
+#   ggplot() +
+#   geom_sf(aes(color = highway), alpha = 0.5) +
+#   # geom_sf(data = CARTO$CALLE |> filter(highway == "living_street"),
+#   #         color = "red", size = 1) +
+#   geom_sf(data =CARTO$CALLE |> filter(str_detect( name, "Ramal Pilar")), color = "red", size = 2) +
+#   # geom_sf(data =CARTO$CALLE |> filter(highway  ==  "motorway"), color = "green") +
+#   geom_sf(data =CARTO$CALLE |> filter(str_detect( name, "Ruta")), color = "blue") +
+#   theme_void()

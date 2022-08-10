@@ -58,6 +58,7 @@ participating in this project you agree to abide by its terms.
 -   [x] Bajar datos IGN (Pablo).
 -   [x] Bajar datos OSM (Pablo).
 -   [x] Armar red de calles (Pablo).
+-   [x] Bajar datos FFCC (Pablo).
 -   [x] Bajar datos RENABAP (Pablo).
     <https://github.com/estedeahora/pilar/issues/1>
 -   [x] Bajar datos de paradas de colectivo (Pablo).
