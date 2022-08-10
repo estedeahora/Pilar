@@ -23,6 +23,40 @@ names(CARTO) <- archivos |>
 
 rm(ruta, archivos)
 
+# Generar base escuela por nivel y sector ---------------------------------
+
+# unique(CARTO$ESC$nen) |>
+#   str_split(pattern = "; |;", simplify = T) |>
+#   as.character() |>
+#   # unique() |>
+#   table()
+ESC <- CARTO$ESC
+CARTO$ESC <- NULL
+
+l <- list(
+       Inicial = c("Común-Escuela Infantil", "Común-Jardín de Infantes", "Común-Jardín Maternal"),
+       Primario = c("Común-Primaria 6años"),
+       Secundario = c("Común-Secundaria-Ambos Ciclos", "Común-Secundaria-Ciclo Básico", "Secundaria TécProf(INET)"),
+       SNU = c("SNU-Ambos Tipos de Formación", "SNU-Formación Docente", "SNU-Formación Técnico Profesional", "Inst.Sup TécProf(INET)")
+
+     )
+# No considerar:
+#   - Especial (ningún nivel);
+#   - Servicios Complementarios
+#   - Adultos (Primaria y  Secundaria)
+#   - Profesional = c("Adultos-Formación Profesional", "Centro Formación Profesional(INET)")
+
+for(i in 1:length(l)){
+  patron <- paste0(l[[i]], collapse = "|")
+  v <- ESC |>
+    filter(str_detect(nen, patron)) |>
+    split(~SECTOR) |>
+    set_names(\(x) paste(names(l)[i], x, sep = "_" ))
+  CARTO <- c(CARTO, v)
+}
+
+rm(l, i, v, patron, ESC)
+
 # Transformar polígonos y lineas a puntos  -----------------------------------
 names(CARTO)
 
