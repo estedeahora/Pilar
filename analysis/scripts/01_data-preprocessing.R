@@ -124,7 +124,8 @@ bb <- st_as_sfc(bb) |> st_set_crs(value = 4326)
   # CALLEJERO
 
   CALLE <- OSM_query(bb = bb, k = 'highway',
-                     feature = "osm_lines")  |>
+                     feature = "osm_lines"#, zona = REGION
+                     )  |>
     filter(highway != "footway")
 
   CALLE <- do.call(rbind,
